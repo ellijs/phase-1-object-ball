@@ -187,32 +187,121 @@ function teamNames() {
 
 console.log(teamNames());
 
-function playNumbers(team) {
+function playerNumbers(team) {
   //return array of Jersey numbers
   const data = gameObject();
   const homeTeam = data.home.teamName;
   const awayTeam = data.away.teamName;
 
   if (team === homeTeam) {
-    return;
+    for (const element of data.home.players) {
+      let x = element[0][0];
+      return x;
+    }
   } else if (team === awayTeam) {
-    return;
+    for (const element of data.away.players) {
+      let x = element[0][0];
+      return x;
+    }
   }
 }
 
-const homeJerseyNumbers = function () {
+function playerStats(name) {
+  const data = gameObject().home.players;
+  if (data.find((player) => player[0].key === name)) {
+    return data[name];
+  } else {
+    return gameObject().away.players[name];
+  }
+}
+
+function bigShoeRebounds() {
   const data = gameObject();
-  let newArray = [];
-  let meetInnerValue = Object.values(data.home.players);
-  newArray.push(
-    meetInnerValue.map((element) => {
-      console.log((element = element.number));
-    })
-  );
-  return newArray;
+  const memory = { shoe: 0 };
+  for (key in data) {
+    for (player in data[key].players) {
+      const playerInfo = data[key].players[player];
+      if (playerInfo.shoe > memory.shoe) {
+        memory.shoe = playerInfo.shoe;
+        memory.rebounds = playerInfo.rebounds;
+      }
+    }
+  }
+  return memory.rebounds;
+}
+
+const mostPointsScored = () => {
+  const data = gameObject();
+  const memory = { name: undefined, points: 0 };
+  for (key in data) {
+    for (player in data[key].players) {
+      const playerInfo = data[key].players[player];
+      if (playerInfo.points > memory.points) {
+        memory.name = player;
+        memory.points = playerInfo.points;
+      }
+    }
+  }
+  return memory.name;
 };
 
-console.log(homeJerseyNumbers());
+const winningTeam = () => {
+  const data = gameObject();
+  const memory = {};
+  for (key in data) {
+    memory[key] = Object.keys(data[key].players)
+      .map((p) => {
+        return data[key].players[p].points;
+      })
+      .reduce((a, n) => a + n);
+  }
+  teams = Object.keys(memory);
+  return memory[teams[0]] > memory[teams[1]] ? teams[0] : teams[1];
+};
+
+function playerWithLongName() {
+  const data = gameObject();
+  const memory = { name: "" };
+  for (key in data) {
+    const team = data[key];
+    Object.keys(team.players).forEach((player) => {
+      if (memory.name.length < player.length) {
+        memory.name = player;
+      }
+    });
+  }
+  return memory.name;
+}
+
+function doesLongNameStealATon() {
+  const data = gameObject();
+  const longName = playerWithLongName(data);
+  const longPlayer = findPlayer(longName, data);
+  for (key in data) {
+    const team = data[key];
+    for (player in team.players) {
+      const challenger = team.players[player];
+      if (longPlayer.steals < challenger.steals) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+// const homeJerseyNumbers = function () {
+//   const data = gameObject();
+//   let newArray = [];
+//   let meetInnerValue = Object.values(data.home.players);
+//   newArray.push(
+//     meetInnerValue.map((element) => {
+//       console.log((element = element.number));
+//     })
+//   );
+//   return newArray;
+// };
+
+// console.log(homeJerseyNumbers());
 // console.log(homePlayers);
 
 // function gameObject() {
